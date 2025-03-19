@@ -165,6 +165,7 @@ def main(input):
 
         try:
             kev_source = 'CISA'
+            print(kev_source)
             #if vc_kev:
             #    cve_result = vulncheck_check(cve_id, api, vc_kev)
                 # exploited = vulncheck_kev(cve_id, api)[0]
@@ -178,8 +179,11 @@ def main(input):
             #        click.echo("Wrong API Key provided (VulnCheck)")
             #        exit()
             cve_result = nist_check(cve, nist_api)
+            print(cve_result)
             exploited = cve_result.get("cisa_kev")
+            print(exploited)
             epss_result = epss_check(cve)
+            print(epss_result)
 
             #try:
             #    if exploited:
@@ -265,7 +269,11 @@ def nist_check(cve_id, api_key):
         nvd_url = NIST_BASE_URL + f"?cveId={cve_id}"
         headers = {'apiKey': nvd_key} if nvd_key else {}
 
+        print(nvd_url)
+        print(headers)
+
         nvd_response = requests.get(nvd_url, headers=headers)
+        print(nvd_response)
         nvd_response.raise_for_status()
 
         response_data = nvd_response.json()
@@ -349,6 +357,9 @@ def epss_check(cve_id):
         epss_url = EPSS_URL + f"?cve={cve_id}"
         epss_response = requests.get(epss_url)
         epss_response.raise_for_status()
+
+        print(epss_url)
+        print(epss_response)
 
         response_data = epss_response.json()
         if response_data.get("total") > 0:
