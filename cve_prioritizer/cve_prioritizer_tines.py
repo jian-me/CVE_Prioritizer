@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import json
 import os
+from pickle import TRUE
 import re
 import threading
 import time
@@ -15,6 +16,7 @@ from threading import Semaphore
 import requests
 import click
 import xml.etree.ElementTree as ET
+from termcolor import colored
 
 import click
 from dotenv import load_dotenv
@@ -86,6 +88,10 @@ def main(input):
     nist_api = input["nist_api_key"]
     vulncheck_api = input["vulncheck_api_key"]
     cve = input["cve"]
+
+    save_output = ''
+    verbose = True
+    colored_output = True
 
     # By default, make the output verbose
     header = VERBOSE_HEADER
@@ -185,53 +191,56 @@ def main(input):
             epss_result = epss_check(cve)
             print(epss_result)
 
-            #try:
-            #    if exploited:
-            #        ransomware = cve_result.get('ransomware')
-            #        print_and_write(save_output, cve_id, 'Priority 1+', epss_result.get('epss'),
-            #                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
-            #                        cve_result.get('cvss_severity'), 'TRUE', ransomware, kev_source, verbose_print,
-            #                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
-            #    elif cve_result.get("cvss_baseScore") >= cvss_score:
-            #        if epss_result.get("epss") >= epss_score:
-            #            print_and_write(save_output, cve_id, 'Priority 1', epss_result.get('epss'),
-            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
-            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
-            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
-            #        else:
-            #            print_and_write(save_output, cve_id, 'Priority 2', epss_result.get('epss'),
-            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
-            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
-            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
-            #    else:
-            #        if epss_result.get("epss") >= epss_score:
-            #            print_and_write(save_output, cve_id, 'Priority 3', epss_result.get('epss'),
-            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
-            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
-            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
-            #        else:
-            #            print_and_write(save_output, cve_id, 'Priority 4', epss_result.get('epss'),
-            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
-            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
-            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
-            #    if results is not None:
-            #        results.append({
-            #            'cve_id': cve_id,
-            #            'priority': 'P1+' if exploited else 'P1' if cve_result.get(
-            #                "cvss_baseScore") >= cvss_score and epss_result.get(
-            #                "epss") >= epss_score else 'P2' if epss_result.get(
-            #                "epss") < epss_score else 'P3' if epss_result.get("epss") >= epss_score else 'P4',
-            #            'epss': epss_result.get('epss'),
-            #            'cvss_base_score': cve_result.get('cvss_baseScore'),
-            #            'cvss_version': cve_result.get('cvss_version'),
-            #            'cvss_severity': cve_result.get('cvss_severity'),
-            #            'kev': 'TRUE' if exploited else 'FALSE',
-            #            'kev_source': kev_source,
-            #            'cpe': cve_result.get('cpe'),
-            #            'vector': cve_result.get('vector')
-            #        })
-            #except (TypeError, AttributeError):
-            #    pass
+            cvss_score = args=cve.upper().strip()
+            print(cvss_score)
+
+            try:
+                if exploited:
+                    ransomware = cve_result.get('ransomware')
+                    print_and_write(save_output, cve, 'Priority 1+', epss_result.get('epss'),
+                                    cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+                                    cve_result.get('cvss_severity'), 'TRUE', ransomware, kev_source, verbose,
+                                    cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+                elif cve_result.get("cvss_baseScore") >= cvss_score:
+                    if epss_result.get("epss") >= epss_score:
+                        print_and_write(save_output, cve, 'Priority 1', epss_result.get('epss'),
+                                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+                                        cve_result.get('cvss_severity'), '', '', kev_source, verbose,
+                                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+                    else:
+                        print_and_write(save_output, cve, 'Priority 2', epss_result.get('epss'),
+                                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+                                        cve_result.get('cvss_severity'), '', '', kev_source, verbose,
+                                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+                else:
+                    if epss_result.get("epss") >= epss_score:
+                        print_and_write(save_output, cve, 'Priority 3', epss_result.get('epss'),
+                                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+                                        cve_result.get('cvss_severity'), '', '', kev_source, verbose,
+                                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+                    else:
+                        print_and_write(save_output, cve, 'Priority 4', epss_result.get('epss'),
+                                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+                                        cve_result.get('cvss_severity'), '', '', kev_source, verbose,
+                                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+                if results is not None:
+                    results.append({
+                        'cve_id': cve,
+                        'priority': 'P1+' if exploited else 'P1' if cve_result.get(
+                            "cvss_baseScore") >= cvss_score and epss_result.get(
+                            "epss") >= epss_score else 'P2' if epss_result.get(
+                            "epss") < epss_score else 'P3' if epss_result.get("epss") >= epss_score else 'P4',
+                        'epss': epss_result.get('epss'),
+                        'cvss_base_score': cve_result.get('cvss_baseScore'),
+                        'cvss_version': cve_result.get('cvss_version'),
+                        'cvss_severity': cve_result.get('cvss_severity'),
+                        'kev': 'TRUE' if exploited else 'FALSE',
+                        'kev_source': kev_source,
+                        'cpe': cve_result.get('cpe'),
+                        'vector': cve_result.get('vector')
+                    })
+            except (TypeError, AttributeError):
+                pass
         except Exception as e:
             print(f"Error in worker thread for CVE {cve}: {e}")
         finally:
@@ -382,3 +391,75 @@ def epss_check(cve_id):
         click.echo(f"Error processing the response: {val_err}")
 
     return {"epss": None, "percentile": None}
+
+# Function manages the outputs
+def print_and_write(working_file, cve_id, priority, epss, cvss_base_score, cvss_version, cvss_severity, kev, ransomware,
+                    source, verbose, cpe, vector, no_color):
+    color_priority = colored_print(priority)
+    vendor, product = parse_cpe(cpe)
+
+    if verbose:
+        if no_color:
+            click.echo(
+                f"{cve_id:<18}{color_priority:<22}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
+                f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
+                f"{truncate_string(product, 20):<23}{vector}")
+            print(
+                f"{cve_id:<18}{color_priority:<22}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
+                f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
+                f"{truncate_string(product, 20):<23}{vector}")
+        else:
+            click.echo(f"{cve_id:<18}{priority:<13}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
+                       f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
+                       f"{truncate_string(product, 20):<23}{vector}")
+            print(f"{cve_id:<18}{priority:<13}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
+                       f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
+                       f"{truncate_string(product, 20):<23}{vector}")
+    else:
+        if no_color:
+            click.echo(f"{cve_id:<18}{color_priority:<22}")
+        else:
+            click.echo(f"{cve_id:<18}{priority:<13}")
+    if working_file:
+        working_file.write(f"{cve_id},{priority},{epss},{cvss_base_score},{cvss_version},{cvss_severity},"
+                           f"{kev},{ransomware},{source},{cpe},{vendor},{product},{vector}\n")
+
+def colored_print(priority):
+    """
+    Function used to handle colored print
+    """
+    if priority == 'Priority 1+':
+        return colored(priority, 'red')
+    elif priority == 'Priority 1':
+        return colored(priority, 'red')
+    elif priority == 'Priority 2':
+        return colored(priority, 'yellow')
+    elif priority == 'Priority 3':
+        return colored(priority, 'yellow')
+    elif priority == 'Priority 4':
+        return colored(priority, 'green')
+
+# Truncate for printing
+def truncate_string(input_string, max_length):
+    """
+    Truncates a string to a maximum length, appending an ellipsis if the string is too long.
+    """
+    if len(input_string) > max_length:
+        return input_string[:max_length - 3] + "..."
+    else:
+        return input_string
+
+# Extract CVE product details
+def parse_cpe(cpe_str):
+    """
+    Parses a CPE URI string and extracts the vendor, product, and version.
+    Assumes the CPE string is in the format: cpe:/a:vendor:product:version:update:edition:language
+    """
+    # Splitting the CPE string into components
+    parts = cpe_str.split(':')
+
+    # Extracting vendor, product, and version
+    vendor = parts[3] if len(parts) > 2 else None
+    product = parts[4] if len(parts) > 3 else None
+
+    return vendor, product
