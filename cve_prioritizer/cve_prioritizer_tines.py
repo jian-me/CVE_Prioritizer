@@ -42,9 +42,6 @@ LOGO = r"""
 """""
 import xml.etree.ElementTree as ET
 
-from scripts.constants import LOGO, SIMPLE_HEADER, VERBOSE_HEADER
-from scripts.helpers import parse_report, update_env_file, worker
-
 load_dotenv()
 Throttle_msg = ''
 
