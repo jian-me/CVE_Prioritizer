@@ -74,7 +74,7 @@ Throttle_msg = ''
 #@click.option('--openvas', is_flag=True, help='Parse OpenVAS file')
 #def main(api, cve, epss, file, cvss, output, threads, verbose, list, no_color, set_api, vulncheck, vulncheck_kev,
 #         json_file, nessus, openvas):
-def main(nist_api_key,vulncheck_api_key,cve):
+def main(input):
     # Global Arguments
   #  color_enabled = not no_color
     throttle_msg = ''
