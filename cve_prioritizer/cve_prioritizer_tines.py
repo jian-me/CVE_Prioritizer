@@ -185,11 +185,11 @@ def main(input):
             #        click.echo("Wrong API Key provided (VulnCheck)")
             #        exit()
             cve_result = nist_check(cve, nist_api)
-            print("NIST Check Result:" + cve_result)
+            print(cve_result)
             exploited = cve_result.get("cisa_kev")
-            print("Is Exploited?" + exploited)
+            print(exploited)
             epss_result = epss_check(cve)
-            print("EPSS Check Result:" + epss_result)
+            print(epss_result)
 
             cvss_score = 6
             epss_score = 0.2
@@ -278,11 +278,11 @@ def nist_check(cve_id, api_key):
         nvd_url = NIST_BASE_URL + f"?cveId={cve_id}"
         headers = {'apiKey': nvd_key} if nvd_key else {}
 
-        print("NVD API URL:" + nvd_url)
-        print("NVD API Headers:" + headers)
+        print(nvd_url)
+        print(headers)
 
         nvd_response = requests.get(nvd_url, headers=headers)
-        print("NVD API Response:" + nvd_response)
+        print(nvd_response)
         nvd_response.raise_for_status()
 
         response_data = nvd_response.json()
@@ -367,8 +367,8 @@ def epss_check(cve_id):
         epss_response = requests.get(epss_url)
         epss_response.raise_for_status()
 
-        print("EPSS URL:" + epss_url)
-        print("EPSS Response:" + epss_response)
+        print(epss_url)
+        print(epss_response)
 
         response_data = epss_response.json()
         if response_data.get("total") > 0:
