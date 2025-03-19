@@ -93,7 +93,7 @@ def main(input):
   #  header = VERBOSE_HEADER if verbose else SIMPLE_HEADER
   #  epss_threshold = epss
   #  cvss_threshold = cvss
-  #  sem = Semaphore(threads)
+    sem = Semaphore(1)
 
     # Temporal lists
     cve_list = []
@@ -179,7 +179,7 @@ def main(input):
             #        exit()
             cve_result = nist_check(cve, nist_api)
             exploited = cve_result.get("cisa_kev")
-            epss_result = epss_check(cve_id)
+            epss_result = epss_check(cve)
 
             #try:
             #    if exploited:
@@ -229,7 +229,7 @@ def main(input):
             #except (TypeError, AttributeError):
             #    pass
         except Exception as e:
-            print(f"Error in worker thread for CVE {cve_id}: {e}")
+            print(f"Error in worker thread for CVE {cve}: {e}")
         finally:
             sem.release()
 
