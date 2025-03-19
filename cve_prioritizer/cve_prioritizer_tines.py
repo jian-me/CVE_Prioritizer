@@ -46,13 +46,13 @@ load_dotenv()
 Throttle_msg = ''
 
 # Configure logging to write to a file in the current working directory
-logging.basicConfig(
-    filename=os.path.join(os.getcwd(), 'cve_prioritizer_logs.txt'),
-    filemode='w',  # Overwrite the log file on each run
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(
+#    filename=os.path.join(os.getcwd(), 'cve_prioritizer_logs.txt'),
+#    filemode='w',  # Overwrite the log file on each run
+#    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#    level=logging.INFO
+# )
+# logger = logging.getLogger(__name__)
 
 
 # Collect EPSS Scores
