@@ -241,6 +241,7 @@ def main(input):
                     })
 
                     print(results)
+                    return {results}
             except (TypeError, AttributeError):
                 pass
         except Exception as e:
