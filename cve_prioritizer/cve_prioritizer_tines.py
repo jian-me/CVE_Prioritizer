@@ -99,6 +99,8 @@ def main(nist_api_key,vulncheck_api_key,cve):
     # Tines is set up to pass only 1 CVE at a time to this function.
     cve_list.append(cve)
 
+    return { "result": 'The cve is: ' + cve}
+
   #  if set_api:
   #      services = ['nist_nvd', 'vulncheck']
   #      service = click.prompt("Please choose a service to set the API key",
