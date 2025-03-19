@@ -80,8 +80,9 @@ def main(nist_api_key,vulncheck_api_key,cve):
     throttle_msg = ''
 
     # Set the NIST API and VULNCHECK API keys based on input from Tines' Python action
-    nist_api = input(nist_api_key)
-    vulncheck_api = input(vulncheck_api_key)
+    nist_api = input["nist_api_key"]
+    vulncheck_api = input["vulncheck_api_key"]
+    cve = input["cve"]
 
     # By default, make the output verbose
     header = VERBOSE_HEADER
