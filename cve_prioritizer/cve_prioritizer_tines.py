@@ -12,6 +12,9 @@ import re
 import threading
 import time
 from threading import Semaphore
+import requests
+import click
+import xml.etree.ElementTree as ET
 
 import click
 from dotenv import load_dotenv
@@ -99,7 +102,8 @@ def main(input):
     # Tines is set up to pass only 1 CVE at a time to this function.
     cve_list.append(cve)
 
-    return { "result": 'The cve is: ' + cve}
+    # Testing "cve" value
+    # return { "result": 'The cve is: ' + cve}
 
   #  if set_api:
   #      services = ['nist_nvd', 'vulncheck']
@@ -140,9 +144,9 @@ def main(input):
   #  else:
   #      print(LOGO + header)
 
-    if output:
-        output.write("cve_id,priority,epss,cvss,cvss_version,cvss_severity,kev,ransomware,kev_source,cpe,vendor,"
-                     "product,vector" + "\n")
+    #if output:
+    #    output.write("cve_id,priority,epss,cvss,cvss_version,cvss_severity,kev,ransomware,kev_source,cpe,vendor,"
+    #                 "product,vector" + "\n")
 
     results = []
     for cve in cve_list:
@@ -158,3 +162,212 @@ def main(input):
   #          click.echo(f'{cve} Error: CVEs should be provided in the standard format CVE-0000-0000*')
   #      else:
         print(cve)
+
+        try:
+            kev_source = 'CISA'
+            #if vc_kev:
+            #    cve_result = vulncheck_check(cve_id, api, vc_kev)
+                # exploited = vulncheck_kev(cve_id, api)[0]
+            #    exploited = cve_result.get('cisa_kev')
+            #    kev_source = 'VULNCHECK'
+            #elif nvd_plus:
+            #    cve_result = vulncheck_check(cve_id, api, vc_kev)
+            #    exploited = cve_result.get("cisa_kevs")
+            #else:
+            #    if 'vulncheck' in str(api).lower():
+            #        click.echo("Wrong API Key provided (VulnCheck)")
+            #        exit()
+            cve_result = nist_check(cve, nist_api)
+            exploited = cve_result.get("cisa_kev")
+            epss_result = epss_check(cve_id)
+
+            #try:
+            #    if exploited:
+            #        ransomware = cve_result.get('ransomware')
+            #        print_and_write(save_output, cve_id, 'Priority 1+', epss_result.get('epss'),
+            #                        cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+            #                        cve_result.get('cvss_severity'), 'TRUE', ransomware, kev_source, verbose_print,
+            #                        cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+            #    elif cve_result.get("cvss_baseScore") >= cvss_score:
+            #        if epss_result.get("epss") >= epss_score:
+            #            print_and_write(save_output, cve_id, 'Priority 1', epss_result.get('epss'),
+            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
+            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+            #        else:
+            #            print_and_write(save_output, cve_id, 'Priority 2', epss_result.get('epss'),
+            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
+            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+            #    else:
+            #        if epss_result.get("epss") >= epss_score:
+            #            print_and_write(save_output, cve_id, 'Priority 3', epss_result.get('epss'),
+            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
+            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+            #        else:
+            #            print_and_write(save_output, cve_id, 'Priority 4', epss_result.get('epss'),
+            #                            cve_result.get('cvss_baseScore'), cve_result.get('cvss_version'),
+            #                            cve_result.get('cvss_severity'), '', '', kev_source, verbose_print,
+            #                            cve_result.get('cpe'), cve_result.get('vector'), colored_output)
+            #    if results is not None:
+            #        results.append({
+            #            'cve_id': cve_id,
+            #            'priority': 'P1+' if exploited else 'P1' if cve_result.get(
+            #                "cvss_baseScore") >= cvss_score and epss_result.get(
+            #                "epss") >= epss_score else 'P2' if epss_result.get(
+            #                "epss") < epss_score else 'P3' if epss_result.get("epss") >= epss_score else 'P4',
+            #            'epss': epss_result.get('epss'),
+            #            'cvss_base_score': cve_result.get('cvss_baseScore'),
+            #            'cvss_version': cve_result.get('cvss_version'),
+            #            'cvss_severity': cve_result.get('cvss_severity'),
+            #            'kev': 'TRUE' if exploited else 'FALSE',
+            #            'kev_source': kev_source,
+            #            'cpe': cve_result.get('cpe'),
+            #            'vector': cve_result.get('vector')
+            #        })
+            #except (TypeError, AttributeError):
+            #    pass
+        except Exception as e:
+            print(f"Error in worker thread for CVE {cve_id}: {e}")
+        finally:
+            sem.release()
+
+    #for t in threads:
+    #    t.join()
+
+    #if json_file:
+    #    metadata = {
+    #        'generator': 'CVE Prioritizer',
+    #        'generation_date': datetime.now(timezone.utc).isoformat(),
+    #        'total_cves': len(cve_list),
+    #        'cvss_threshold': cvss_threshold,
+    #        'epss_threshold': epss_threshold,
+    #    }
+    #    output_data = {
+    #        'metadata': metadata,
+    #        'cves': results,
+    #    }
+    #    with open(json_file, 'w') as json_file:
+    #        json.dump(output_data, json_file, indent=4)
+
+
+if __name__ == '__main__':
+    main()
+
+# Check NIST NVD for the CVE
+def nist_check(cve_id, api_key):
+    """
+    Function collects NVD Data
+    """
+    try:
+        nvd_key = api_key
+        nvd_url = NIST_BASE_URL + f"?cveId={cve_id}"
+        headers = {'apiKey': nvd_key} if nvd_key else {}
+
+        nvd_response = requests.get(nvd_url, headers=headers)
+        nvd_response.raise_for_status()
+
+        response_data = nvd_response.json()
+        if response_data.get("totalResults") > 0:
+            for unique_cve in response_data.get("vulnerabilities"):
+                cisa_kev = unique_cve.get("cve").get("cisaExploitAdd", False)
+                ransomware = ''
+                if cisa_kev:
+                    kev_data = requests.get(CISA_KEV_URL)
+                    kev_data.raise_for_status()
+                    kev_list = kev_data.json()
+                    for entry in kev_list.get('vulnerabilities', []):
+                        if entry.get('cveID') == cve_id:
+                            ransomware = str(entry.get('knownRansomwareCampaignUse')).upper()
+
+                cpe = unique_cve.get("cve").get("configurations", [{}])[0].get("nodes", [{}])[0].get("cpeMatch", [{}])[0].get("criteria", 'cpe:2.3:::::::::::')
+
+                metrics = unique_cve.get("cve").get("metrics", {})
+                for version in ["cvssMetricV31", "cvssMetricV30", "cvssMetricV2"]:
+                    if version in metrics:
+                        for metric in metrics[version]:
+                            return {
+                                "cvss_version": version.replace("cvssMetric", "CVSS "),
+                                "cvss_baseScore": float(metric.get("cvssData", {}).get("baseScore", 0)),
+                                "cvss_severity": metric.get("cvssData", {}).get("baseSeverity", ""),
+                                "cisa_kev": cisa_kev,
+                                "ransomware": ransomware,
+                                "cpe": cpe,
+                                "vector": metric.get("cvssData", {}).get("vectorString", "")
+                            }
+
+                if unique_cve.get("cve").get("vulnStatus") == "Awaiting Analysis":
+                    print(f"{cve_id:<18}Awaiting NVD Analysis")
+                    return {
+                        "cvss_version": "",
+                        "cvss_baseScore": "",
+                        "cvss_severity": "",
+                        "cisa_kev": "",
+                        "ransomware": "",
+                        "cpe": "",
+                        "vector": ""
+                    }
+        else:
+            print(f"{cve_id:<18}Not Found in NIST NVD.")
+            return {
+                "cvss_version": "",
+                "cvss_baseScore": "",
+                "cvss_severity": "",
+                "cisa_kev": "",
+                "ransomware": "",
+                "cpe": "",
+                "vector": ""
+            }
+    except requests.exceptions.HTTPError:
+        print(f"{cve_id:<18}HTTP error occurred, check CVE ID or API Key")
+    except requests.exceptions.ConnectionError:
+        print("Unable to connect to NIST NVD, check your Internet connection or try again")
+    except requests.exceptions.Timeout:
+        print("The request to NIST NVD timed out")
+    except requests.exceptions.RequestException as req_err:
+        print(f"An error occurred: {req_err}")
+    except ValueError as val_err:
+        print(f"Error processing the response: {val_err}")
+
+    return {
+        "cvss_version": "",
+        "cvss_baseScore": "",
+        "cvss_severity": "",
+        "cisa_kev": "",
+        "ransomware": "",
+        "cpe": "",
+        "vector": ""
+    }
+
+# Collect EPSS Scores
+def epss_check(cve_id):
+    """
+    Function collects EPSS from FIRST.org
+    """
+    try:
+        epss_url = EPSS_URL + f"?cve={cve_id}"
+        epss_response = requests.get(epss_url)
+        epss_response.raise_for_status()
+
+        response_data = epss_response.json()
+        if response_data.get("total") > 0:
+            for cve in response_data.get("data"):
+                results = {"epss": float(cve.get("epss")),
+                           "percentile": int(float(cve.get("percentile")) * 100)}
+                return results
+        else:
+            click.echo(f"{cve_id:<18}Not Found in EPSS.")
+            return {"epss": None, "percentile": None}
+    except requests.exceptions.HTTPError as http_err:
+        click.echo(f"HTTP error occurred: {http_err}")
+    except requests.exceptions.ConnectionError:
+        click.echo("Unable to connect to EPSS, check your Internet connection or try again")
+    except requests.exceptions.Timeout:
+        click.echo("The request to EPSS timed out")
+    except requests.exceptions.RequestException as req_err:
+        click.echo(f"An error occurred: {req_err}")
+    except ValueError as val_err:
+        click.echo(f"Error processing the response: {val_err}")
+
+    return {"epss": None, "percentile": None}
