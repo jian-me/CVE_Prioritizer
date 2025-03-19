@@ -240,7 +240,6 @@ def main(input):
                         'vector': cve_result.get('vector')
                     })
 
-                    print(results)
                     return {results}
             except (TypeError, AttributeError):
                 pass
