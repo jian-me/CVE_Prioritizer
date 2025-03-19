@@ -239,6 +239,8 @@ def main(input):
                         'cpe': cve_result.get('cpe'),
                         'vector': cve_result.get('vector')
                     })
+
+                    print(results)
             except (TypeError, AttributeError):
                 pass
         except Exception as e:
@@ -404,15 +406,8 @@ def print_and_write(working_file, cve_id, priority, epss, cvss_base_score, cvss_
                 f"{cve_id:<18}{color_priority:<22}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
                 f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
                 f"{truncate_string(product, 20):<23}{vector}")
-            print(
-                f"{cve_id:<18}{color_priority:<22}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
-                f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
-                f"{truncate_string(product, 20):<23}{vector}")
         else:
             click.echo(f"{cve_id:<18}{priority:<13}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
-                       f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
-                       f"{truncate_string(product, 20):<23}{vector}")
-            print(f"{cve_id:<18}{priority:<13}{epss:<9}{cvss_base_score:<6}{cvss_version:<10}{cvss_severity:<10}"
                        f"{kev:<7}{ransomware:<12}{truncate_string(vendor, 15):<18}"
                        f"{truncate_string(product, 20):<23}{vector}")
     else:
@@ -423,6 +418,8 @@ def print_and_write(working_file, cve_id, priority, epss, cvss_base_score, cvss_
     if working_file:
         working_file.write(f"{cve_id},{priority},{epss},{cvss_base_score},{cvss_version},{cvss_severity},"
                            f"{kev},{ransomware},{source},{cpe},{vendor},{product},{vector}\n")
+
+    return {"cve_id": cve_id, "priority": priority, "epss": epss, "cvss_base_score": cvss_base_score, "cvss_version": cvss_version, "cvss_severity": cvss_severity, "kev": kev, "ransomware": ransomware, "vendor": truncate_string(vendor, 15), "product": truncate_string(product, 20), "vector": vector}
 
 def colored_print(priority):
     """
