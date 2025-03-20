@@ -85,9 +85,6 @@ def main(input):
     vc_kev = input["use_vulncheck_kev"]
     nvd_plus = input["use_nvd_plus"]
 
-    print(vc_kev)
-    print(nvd_plus)
-
     # By default, make the output verbose
     header = VERBOSE_HEADER
 
@@ -123,11 +120,13 @@ def main(input):
             kev_source = 'CISA'
             print(kev_source)
             if vc_kev:
+                print("here")
                 cve_result = vulncheck_check(cve, vulncheck_api, vc_kev)
                 # exploited = vulncheck_kev(cve_id, api)[0]
                 exploited = cve_result.get('cisa_kev')
                 kev_source = 'VULNCHECK'
             elif nvd_plus:
+                print("no here")
                 cve_result = vulncheck_check(cve, vulncheck_api, vc_kev)
                 exploited = cve_result.get("cisa_kevs")
             else:
