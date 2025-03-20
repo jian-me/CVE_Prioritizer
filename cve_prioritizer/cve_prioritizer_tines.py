@@ -85,6 +85,9 @@ def main(input):
     vc_kev = input["use_vulncheck_kev"]
     nvd_plus = input["use_nvd_plus"]
 
+    print(vc_kev)
+    print(nvd_plus)
+
     # By default, make the output verbose
     header = VERBOSE_HEADER
 
