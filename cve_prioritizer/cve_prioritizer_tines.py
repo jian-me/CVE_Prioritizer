@@ -119,22 +119,19 @@ def main(input):
         try:
             kev_source = 'CISA'
             print(kev_source)
-            print(vc_kev)
 
             if vc_kev:
-                print("vulncheck in")
+                print("using vulncheck kev")
                 cve_result = vulncheck_check(cve, vulncheck_api, vc_kev)
                 # exploited = vulncheck_kev(cve_id, api)[0]
                 exploited = cve_result.get('cisa_kev')
                 kev_source = 'VULNCHECK'
-                print(cve_result)
-                print(exploited)
-                print("vulncheck out")
             elif nvd_plus:
-                print("nvd+ in")
+                print("using nvd+")
                 cve_result = vulncheck_check(cve, vulncheck_api, vc_kev)
                 exploited = cve_result.get("cisa_kevs")
             else:
+                print("using nist nvd")
                 cve_result = nist_check(cve, nist_api)
                 print(cve_result)
                 exploited = cve_result.get("cisa_kev")
